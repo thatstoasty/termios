@@ -1,16 +1,40 @@
-from termios.c.terminal import tcgetattr, tcsetattr, tcdrain, FD_STDIN, cc_t, termios, IGNBRK, OPOST, CREAD, ECHO, TCSADRAIN
+from termios.c.terminal import tcgetattr, tcsetattr, tcdrain, FD_STDIN, cc_t, termios, IGNBRK, OPOST, CREAD, ECHO, TCSADRAIN, TCSANOW
+from termios.c.syscalls import read_string_from_fd, read_bytes_from_fd
 from termios.terminal import tc_get_attr, tc_set_attr
-from termios.tty import cfmakeraw, setraw
+from termios.tty import cfmakeraw, setraw, setcbreak
+
+
+fn getpass(prompt: String = "Password: ") raises -> String:
+    var fd = int(FD_STDIN)
+    var old_settings = tc_get_attr(FD_STDIN)
+    var new_settings = tc_get_attr(FD_STDIN)
+    new_settings.c_lflag = new_settings.c_lflag & ~ECHO # 
+    var passwd: String = ""
+    try:
+        print(prompt)
+        _ = tc_set_attr(fd, TCSADRAIN, Pointer.address_of(new_settings))
+        # passwd = input(prompt)
+        with open("/dev/stdin", "r") as stdin:
+            var bytes = stdin.read_bytes(1)
+            passwd = chr(int(bytes[0]))
+    finally:
+        _ = tc_set_attr(fd, TCSADRAIN, Pointer.address_of(old_settings))
+    return passwd
 
 
 fn get_key_unix() raises -> String:
     var old_settings = tc_get_attr(FD_STDIN)
+    print(old_settings.c_cflag, old_settings.c_iflag, old_settings.c_lflag, old_settings.c_oflag, old_settings.c_ispeed, old_settings.c_ospeed)
     var status = setraw(int(FD_STDIN))
 
     var key: String = ""
     with open("/dev/stdin", "r") as stdin:
         var bytes = stdin.read_bytes(1)
         key = chr(int(bytes[0]))
+    
+    # var bytes = read_bytes_from_fd(FD_STDIN, 1)
+    # key = chr(int(bytes[0]))
+    # key = read_string_from_fd(FD_STDIN, 1)
 
     # restore terminal settings
     var setattr_result = tc_set_attr(FD_STDIN, TCSADRAIN, Pointer.address_of(old_settings))
@@ -32,7 +56,11 @@ fn get_key() raises -> String:
 
 
 fn main() raises:
-    _ = get_key()
+    print(getpass())
+    # var old_settings = setcbreak(int(FD_STDIN), TCSANOW)
+    # _ = get_key()
+    # _ = tc_set_attr(FD_STDIN, TCSADRAIN, Pointer.address_of(old_settings))
+    # _ = get_key()
     # var cc = StaticTuple[20, UInt8]()
     # for i in range(len(cc)):
     #     cc[i] = 0

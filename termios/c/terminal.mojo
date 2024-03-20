@@ -234,3 +234,42 @@ fn cfmakeraw(termios_p: Pointer[termios]) -> c_void:
         termios_p: Pointer to a termios struct.
     """
     return external_call["cfmakeraw", c_void, Pointer[termios]](termios_p)
+
+
+# @value
+# @register_passable("trivial")
+# struct winsize():
+#     var ws_row: UInt8      # Number of rows, in characters */
+#     var ws_col: UInt8      # Number of columns, in characters */
+#     var ws_xpixel: UInt8   # Width, in pixels */
+#     var ws_ypixel: UInt8   # Height, in pixels */
+
+#     fn __init__(inout self):
+#         self.ws_row = 0
+#         self.ws_col = 0
+#         self.ws_xpixel = 0
+#         self.ws_ypixel = 0
+
+
+# fn tcgetwinsize(fd: c_int, winsize_p: Pointer[winsize]) -> c_int:
+#     """Libc POSIX `tcgetwinsize` function
+#     Reference: https://man.netbsd.org/tcgetwinsize.3
+#     Fn signature: int tcgetwinsize(int fd, struct winsize *gws).
+
+#     Args:
+#         fd: File descriptor.
+#         winsize_p: Pointer to a winsize struct.
+#     """
+#     return external_call["tcgetwinsize", c_int, c_int, Pointer[winsize]](fd, winsize_p)
+
+
+# fn tcsetwinsize(fd: c_int, winsize_p: Pointer[winsize]) -> c_int:
+#     """Libc POSIX `tcgetwinsize` function
+#     Reference: https://man.netbsd.org/tcsetwinsize.3
+#     Fn signature: int tcsetwinsize(int fd, const struct winsize *sws).
+
+#     Args:
+#         fd: File descriptor.
+#         winsize_p: Pointer to a winsize struct.
+#     """
+#     return external_call["tcsetwinsize", c_int, c_int, Pointer[winsize]](fd, winsize_p)

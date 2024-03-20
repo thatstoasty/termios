@@ -83,35 +83,35 @@ fn cfmakeraw(inout mode: termios):
     mode.c_cc[VTIME] = 0
 
 
-# fn cfmakecbreak(mode: termios):
-#     """Make termios mode cbreak."""
-#     # Do not echo characters; disable canonical input.
-#     mode[LFLAG] &= ~(ECHO | ICANON)
+fn cfmakecbreak(inout mode: termios):
+    """Make termios mode cbreak."""
+    # Do not echo characters; disable canonical input.
+    mode.c_lflag &= ~(ECHO | ICANON)
 
-#     # POSIX.1-2017, 11.1.7 Non-Canonical Mode Input Processing,
-#     # Case B: MIN>0, TIME=0
-#     # A pending read shall block until MIN (here 1) bytes are received,
-#     # or a signal is received.
-#     mode[CC] = list(mode[CC])
-#     mode[CC][VMIN] = 1
-#     mode[CC][VTIME] = 0
+    # POSIX.1-2017, 11.1.7 Non-Canonical Mode Input Processing,
+    # Case B: MIN>0, TIME=0
+    # A pending read shall block until MIN (here 1) bytes are received,
+    # or a signal is received.
+    # mode[CC] = list(mode[CC])
+    mode.c_cc[VMIN] = 1
+    mode.c_cc[VTIME] = 0
 
 
 fn setraw(fd: Int, when: Int = TCSAFLUSH) raises -> termios:
     """Put terminal into raw mode."""
     var mode = tc_get_attr(fd)
-    # var new = list(mode)
-    _ = cfmakeraw(mode)
+    cfmakeraw(mode)
     var status = tc_set_attr(fd, when, Pointer.address_of(mode))
     if status != 0:
         raise Error("setraw failed at tc_set_attr")
     return mode
 
 
-# fn setcbreak(fd: Int, when: Int = TCSAFLUSH):
-#     """Put terminal into cbreak mode."""
-#     mode = tcgetattr(fd)
-#     new = list(mode)
-#     cfmakecbreak(new)
-#     tcsetattr(fd, when, new)
-#     return mode
+fn setcbreak(fd: Int, when: Int = TCSAFLUSH) raises -> termios:
+    """Put terminal into cbreak mode."""
+    var mode = tc_get_attr(fd)
+    cfmakecbreak(mode)
+    var status = tc_set_attr(fd, when, Pointer.address_of(mode))
+    if status != 0:
+        raise Error("setraw failed at tc_set_attr")
+    return mode
