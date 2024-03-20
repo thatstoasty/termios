@@ -1,1 +1,12 @@
-from .terminal import termios, winsize, tcgetattr, tcsetattr, tcsendbreak, tcdrain, tcflush, tcflow, tcgetwinsize, tcsetwinsize, TCSANOW, TCSADRAIN, TCSAFLUSH
+from .terminal import (
+    Termios,
+    tcgetattr,
+    tcsetattr,
+    tcsendbreak,
+    tcdrain,
+    tcflush,
+    tcflow,
+    TCSANOW,
+    TCSADRAIN,
+    TCSAFLUSH,
+)

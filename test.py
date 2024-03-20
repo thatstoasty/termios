@@ -24,8 +24,8 @@ from termios import *
 # print(ICRNL)
 # print(IGNBRK) # Ignore BREAK condition on input.
 
-print("[iflag, oflag, cflag, lflag, ispeed, ospeed, cc]")
-print(tcgetattr(1))
+# print("[iflag, oflag, cflag, lflag, ispeed, ospeed, cc]")
+# print(tcgetattr(1))
 
 # print(TCSADRAIN)
 # print(TCSAFLUSH)
@@ -49,3 +49,8 @@ print(tcgetattr(1))
 # print(CS8)
 # print(NOFLSH)
 # print(TOSTOP)
+
+print(TCIFLUSH)
+print(TCOON)
+print(TCOFLUSH)
+print(TCIOFLUSH)

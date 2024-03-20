@@ -2,6 +2,7 @@ from .terminal import c_int, c_char, c_ssize_t, c_size_t
 
 alias char_pointer = AnyPointer[c_char]
 
+
 @value
 struct Str:
     var vector: DynamicVector[c_char]
@@ -31,6 +32,7 @@ struct Str:
     fn __enter__(owned self: Self) -> Self:
         return self ^
 
+
 fn read_string_from_fd(file_descriptor: c_int, size: Int = 4096) raises -> String:
     var buffer: Str
     with Str(size=size) as buffer:
@@ -45,16 +47,18 @@ fn read_string_from_fd(file_descriptor: c_int, size: Int = 4096) raises -> Strin
         # we don't have easy to use utf-8 support.
         if read_count == size:
             return buffer.to_string(read_count)
-        
+
         raise Error(
-                "You can only read up to "
-                + String(size)
-                + " bytes. "
-                "Wait for UTF-8 support in Mojo for better handling of long inputs."
-            )
+            "You can only read up to "
+            + String(size)
+            + " bytes. "
+            "Wait for UTF-8 support in Mojo for better handling of long inputs."
+        )
 
 
-fn read_bytes_from_fd(file_descriptor: c_int, size: Int = 4096) raises -> DynamicVector[c_char]:
+fn read_bytes_from_fd(
+    file_descriptor: c_int, size: Int = 4096
+) raises -> DynamicVector[c_char]:
     with Str(size=size) as buffer:
         var read_count: c_ssize_t = external_call[
             "read", c_ssize_t, c_int, char_pointer, c_size_t

@@ -1,2 +1,2 @@
-# termios
-Mojo termios via libc
+# Termios
+Mojo Termios via libc

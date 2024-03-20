@@ -30,11 +30,11 @@ alias FD_STDIN: c_int = 0
 alias FD_STDOUT: c_int = 1
 alias FD_STDERR: c_int = 2
 
-# c_cflag values
+# control_flags values
 alias CREAD = 2048
 alias CLOCAL = 32768
 
-# c_lflag values
+# local_flags values
 alias ICANON = 256
 alias ECHO = 8
 alias ECHOE = 2
@@ -43,16 +43,16 @@ alias ECHONL = 16
 alias ISIG = 128
 alias IEXTEN = 1024
 
-# c_oflag values
+# output_flags values
 alias OPOST = 1
 
-# c_iflag values
+# input_flags values
 alias INLCR = 64
 alias IGNCR = 128
 alias ICRNL = 256
 alias IGNBRK = 1  # Ignore BREAK condition on input.
 
-# Special Character indexes for c_cc
+# Special Character indexes for control_characters
 alias VEOF = 1  # Signal End-Of-Input	Ctrl-D
 alias VEOL = 2  # Signal End-Of-Line	[Disabled]
 alias VERASE = 3  # Delete previous character	Backspace
@@ -123,59 +123,68 @@ alias CS8 = 768
 alias NOFLSH = 2147483648
 alias TOSTOP = 4194304
 
+# tty when values
 alias TCSADRAIN = 1
 alias TCSAFLUSH = 2
 alias TCSANOW = 0
 alias TCSASOFT = 16
 
+# tty flow actions
+alias TCOOFF = 1
+alias TCOON = 2
+alias TCOFLUSH = 2
+alias TCIOFLUSH = 3
+
 
 # define NCCS 12
 @value
 @register_passable("trivial")
-struct termios:
-    var c_cc: StaticTuple[20, cc_t]  # control characters
-    var c_cflag: tcflag_t  # control modes
-    var c_lflag: tcflag_t  # local modes
-    var c_iflag: tcflag_t  # input modes
-    var c_oflag: tcflag_t  # output modes
-    var c_ispeed: speed_t  # input baudrate
-    var c_ospeed: speed_t  # output baudrate
+struct Termios:
+    var control_characters: StaticTuple[20, cc_t]  # control characters, c_cc
+    var control_flags: tcflag_t  # control modes, control_flags
+    var local_flags: tcflag_t  # local modes, c_lflag
+    var input_flags: tcflag_t  # input modes, c_iflag
+    var output_flags: tcflag_t  # output modes, c_oflag
+    var input_speed: speed_t  # input baudrate, c_ispeed
+    var output_speed: speed_t  # output baudrate, c_ospeed
 
     fn __init__(inout self):
-        self.c_cc = StaticTuple[20, cc_t]()
-        for i in range(len(self.c_cc)):
-            self.c_cc[i] = 0
-        self.c_cflag = 0
-        self.c_lflag = 0
-        self.c_iflag = 0
-        self.c_oflag = 0
-        self.c_ispeed = 0
-        self.c_ospeed = 0
+        self.control_characters = StaticTuple[20, cc_t]()
+        for i in range(len(self.control_characters)):
+            self.control_characters[i] = 0
+        self.control_flags = 0
+        self.local_flags = 0
+        self.input_flags = 0
+        self.output_flags = 0
+        self.input_speed = 0
+        self.output_speed = 0
 
 
-fn tcgetattr(fd: c_int, termios_p: Pointer[termios]) -> c_int:
+fn tcgetattr(fd: c_int, termios_p: Pointer[Termios]) -> c_int:
     """Libc POSIX `tcgetattr` function
     Reference: https://man7.org/linux/man-pages/man3/tcgetattr.3.html
-    Fn signature: int tcgetattr(int fd, struct termios *termios_p).
+    Fn signature: int tcgetattr(int fd, struct Termios *termios_p).
 
     Args:
         fd: File descriptor.
-        termios_p: Pointer to a termios struct.
+        termios_p: Pointer to a Termios struct.
     """
-    return external_call["tcgetattr", c_int, c_int, Pointer[termios]](fd, termios_p)
+    return external_call["tcgetattr", c_int, c_int, Pointer[Termios]](fd, termios_p)
 
 
-fn tcsetattr(fd: c_int, optional_actions: c_int, termios_p: Pointer[termios]) -> c_int:
+fn tcsetattr(fd: c_int, optional_actions: c_int, termios_p: Pointer[Termios]) -> c_int:
     """Libc POSIX `tcsetattr` function
     Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
-    Fn signature: int tcsetattr(int fd, int optional_actions, const struct termios *termios_p).
+    Fn signature: int tcsetattr(int fd, int optional_actions, const struct Termios *termios_p).
 
     Args:
         fd: File descriptor.
         optional_actions: Optional actions.
-        termios_p: Pointer to a termios struct.
+        termios_p: Pointer to a Termios struct.
     """
-    return external_call["tcsetattr", c_int, c_int, c_int, Pointer[termios]](fd, optional_actions, termios_p)
+    return external_call["tcsetattr", c_int, c_int, c_int, Pointer[Termios]](
+        fd, optional_actions, termios_p
+    )
 
 
 fn tcsendbreak(fd: c_int, duration: c_int) -> c_int:
@@ -225,15 +234,15 @@ fn tcflow(fd: c_int, action: c_int) -> c_int:
     return external_call["tcflow", c_int, c_int](fd, action)
 
 
-fn cfmakeraw(termios_p: Pointer[termios]) -> c_void:
+fn cfmakeraw(termios_p: Pointer[Termios]) -> c_void:
     """Libc POSIX `cfmakeraw` function
     Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
-    Fn signature: void cfmakeraw(struct termios *termios_p).
+    Fn signature: void cfmakeraw(struct Termios *termios_p).
 
     Args:
-        termios_p: Pointer to a termios struct.
+        termios_p: Pointer to a Termios struct.
     """
-    return external_call["cfmakeraw", c_void, Pointer[termios]](termios_p)
+    return external_call["cfmakeraw", c_void, Pointer[Termios]](termios_p)
 
 
 # @value
