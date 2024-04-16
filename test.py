@@ -1,4 +1,5 @@
 from termios import *
+import sys
 
 # print("ICANON", ICANON)
 
@@ -24,8 +25,8 @@ from termios import *
 # print(ICRNL)
 # print(IGNBRK) # Ignore BREAK condition on input.
 
-# print("[iflag, oflag, cflag, lflag, ispeed, ospeed, cc]")
-# print(tcgetattr(1))
+print("[iflag, oflag, cflag, lflag, ispeed, ospeed, cc]")
+print(tcgetattr(1))
 
 # print(TCSADRAIN)
 # print(TCSAFLUSH)
@@ -50,7 +51,9 @@ from termios import *
 # print(NOFLSH)
 # print(TOSTOP)
 
-print(TCIFLUSH)
-print(TCOON)
-print(TCOFLUSH)
-print(TCIOFLUSH)
+# print(TCIFLUSH)
+# print(TCOON)
+# print(TCOFLUSH)
+# print(TCIOFLUSH)
+# sys.stdin.read()
+# sys.stdin.fileno()

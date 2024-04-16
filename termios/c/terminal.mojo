@@ -1,4 +1,3 @@
-# Adapted from https://github.com/crisadamo/mojo-Libc . Huge thanks to Cristian!
 # C types
 alias c_void = UInt8
 alias c_char = UInt8
@@ -22,8 +21,11 @@ alias intptr_t = Int64
 alias uintptr_t = UInt64
 
 alias cc_t = UInt8
-alias tcflag_t = UInt32
-alias speed_t = UInt32
+# alias tcflag_t = UInt32
+# alias speed_t = UInt32
+# 64bit system
+alias tcflag_t = UInt64
+alias speed_t = UInt64
 alias NCCS = Int8
 
 alias FD_STDIN: c_int = 0
@@ -140,16 +142,16 @@ alias TCIOFLUSH = 3
 @value
 @register_passable("trivial")
 struct Termios:
-    var control_characters: StaticTuple[20, cc_t]  # control characters, c_cc
-    var control_flags: tcflag_t  # control modes, control_flags
-    var local_flags: tcflag_t  # local modes, c_lflag
     var input_flags: tcflag_t  # input modes, c_iflag
     var output_flags: tcflag_t  # output modes, c_oflag
+    var control_flags: tcflag_t  # control modes, control_flags
+    var local_flags: tcflag_t  # local modes, c_lflag
+    var control_characters: StaticTuple[cc_t, 20]  # control characters, c_cc
     var input_speed: speed_t  # input baudrate, c_ispeed
     var output_speed: speed_t  # output baudrate, c_ospeed
 
     fn __init__(inout self):
-        self.control_characters = StaticTuple[20, cc_t]()
+        self.control_characters = StaticTuple[cc_t, 20]()
         for i in range(len(self.control_characters)):
             self.control_characters[i] = 0
         self.control_flags = 0

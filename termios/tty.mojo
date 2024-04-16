@@ -30,6 +30,7 @@ from .c.terminal import (
     TOSTOP,
 )
 from .terminal import get_tty_attributes, set_tty_attributes
+from time import now
 
 # Indices for Termios list.
 alias IFLAG = 0
@@ -143,7 +144,8 @@ fn set_tty_to_cbreak(fd: Int, when: Int = TCSAFLUSH) raises -> Termios:
     """
     var mode = get_tty_attributes(fd)
     set_control_flags_to_cbreak(mode)
-    var status = set_tty_attributes(fd, when, Pointer.address_of(mode))
+    var ptr = Pointer.address_of(mode)
+    var status = set_tty_attributes(fd, when, ptr)
     if status != 0:
         raise Error("setcbreak failed at set_tty_attributes")
     return mode
