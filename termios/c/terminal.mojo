@@ -55,17 +55,18 @@ alias ICRNL = 256
 alias IGNBRK = 1  # Ignore BREAK condition on input.
 
 # Special Character indexes for control_characters
-alias VEOF = 1  # Signal End-Of-Input	Ctrl-D
-alias VEOL = 2  # Signal End-Of-Line	[Disabled]
+alias VEOF = 0  # Signal End-Of-Input	Ctrl-D
+alias VEOL = 1  # Signal End-Of-Line	[Disabled]
 alias VERASE = 3  # Delete previous character	Backspace
-alias VINTR = 4  # Generate SIGINT	Ctrl-C
+alias VINTR = 8  # Generate SIGINT	Ctrl-C
 alias VKILL = 5  # 	Erase current line	Ctrl-U
-alias VMIN = 6  # 	The MIN value	1
-alias VQUIT = 7  # 	Generate SIGQUIT	Ctrl-\
-alias VSTART = 8  # 	Resume output	Ctrl-Q
-alias VSTOP = 9  # Suspend output	Ctrl-S
+alias VMIN = 16  # 	The MIN value	1
+alias VQUIT = 9  # 	Generate SIGQUIT	Ctrl-\
+alias VSTART = 12  # 	Resume output	Ctrl-Q
+alias VSTOP = 13  # Suspend output	Ctrl-S
 alias VSUSP = 10  # Suspend program	Ctrl-Z
-alias VTIME = 11  # TIME value	0
+alias VTIME = 17  # TIME value	0
+
 
 # If IGNBRK is set, a BREAK is ignored.  If it is not set
 # but BRKINT is set, then a BREAK causes the input and
@@ -75,8 +76,8 @@ alias VTIME = 11  # TIME value	0
 # group.  When neither IGNBRK nor BRKINT are set, a BREAK
 # reads as a null byte ('\0'), except when PARMRK is set, in
 # which case it reads as the sequence \377 \0 \0.
-alias BRKINT = 1
-alias IGNPAR = 2  # Ignore framing errors and parity errors.
+alias BRKINT = 2
+alias IGNPAR = 4  # Ignore framing errors and parity errors.
 # If this bit is set, input bytes with parity or framing
 # errors are marked when passed to the program.  This bit is
 # meaningful only when INPCK is set and IGNPAR is not set.
@@ -92,7 +93,7 @@ alias IGNPAR = 2  # Ignore framing errors and parity errors.
 # If neither IGNPAR nor PARMRK is set, read a character with
 # a parity error or framing error as \0.
 
-alias PARMRK = 3
+alias PARMRK = 8
 alias INPCK = 16  # Enable input parity checking.
 alias ISTRIP = 32  # Strip off eighth bit.
 
@@ -160,6 +161,15 @@ struct Termios:
         self.output_flags = 0
         self.input_speed = 0
         self.output_speed = 0
+    
+    fn __init__(inout self, other: Self):
+        self.control_characters = other.control_characters
+        self.control_flags = other.control_flags
+        self.local_flags = other.local_flags
+        self.input_flags = other.input_flags
+        self.output_flags = other.output_flags
+        self.input_speed = other.input_speed
+        self.output_speed = other.output_speed
 
 
 fn tcgetattr(fd: c_int, termios_p: Pointer[Termios]) -> c_int:

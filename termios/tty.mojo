@@ -122,11 +122,12 @@ fn set_tty_to_raw(fd: Int, when: Int = TCSAFLUSH) raises -> Termios:
         when: When to apply the changes. Default is TCSAFLUSH.
 
     Returns:
-        The modified terminal attributes.
+        The original terminal attributes.
     """
     var mode = get_tty_attributes(fd)
-    set_control_flags_to_raw_mode(mode)
-    var status = set_tty_attributes(fd, when, Pointer.address_of(mode))
+    var new = Termios(mode)
+    set_control_flags_to_raw_mode(new)
+    var status = set_tty_attributes(fd, when, Pointer.address_of(new))
     if status != 0:
         raise Error("setraw failed at set_tty_attributes")
     return mode
@@ -140,11 +141,12 @@ fn set_tty_to_cbreak(fd: Int, when: Int = TCSAFLUSH) raises -> Termios:
         when: When to apply the changes. Default is TCSAFLUSH.
 
     Returns:
-        The modified terminal attributes.
+        The original terminal attributes.
     """
     var mode = get_tty_attributes(fd)
-    set_control_flags_to_cbreak(mode)
-    var ptr = Pointer.address_of(mode)
+    var new = Termios(mode)
+    set_control_flags_to_cbreak(new)
+    var ptr = Pointer.address_of(new)
     var status = set_tty_attributes(fd, when, ptr)
     if status != 0:
         raise Error("setcbreak failed at set_tty_attributes")

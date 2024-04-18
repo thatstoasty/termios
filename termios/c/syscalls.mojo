@@ -1,7 +1,7 @@
 from .terminal import c_int, c_char, c_ssize_t, c_size_t, FD_STDIN
 from time import now
 
-alias char_pointer = AnyPointer[c_char]
+alias char_pointer = UnsafePointer[c_char]
 alias FILE = UInt64
 
 
@@ -28,7 +28,7 @@ struct Str:
     fn to_string(self, size: Int) -> String:
         var result: String = ""
         for i in range(size):
-            result += chr(self.vector[i].to_int())
+            result += chr(int(self.vector[i]))
         return result
 
     fn __enter__(owned self: Self) -> Self:
