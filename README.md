@@ -1,5 +1,5 @@
 # Termios
-Mojo Termios via `libc`. This is only tested on Mac and will most likely have issues with the `Termios` struct on linux. Update the `Termios` struct as needed if running on Linux. You would most likely need to change the order of the fields in the struct.
+Mojo Termios via `libc`. This is only tested on Mac and will most likely have issues with the `Termios` struct on linux. It does not work on Ubuntu 22.04 as of now, so you'll need to update the `Termios` struct as needed if running on Linux. You would most likely need to change the order of the fields in the struct. If that doesn't work, then the values of the constants may need to be updated too.
 
 Will add more later. Here's a basic example from the examples directory.
 
