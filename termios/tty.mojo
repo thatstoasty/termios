@@ -114,40 +114,55 @@ fn set_control_flags_to_cbreak(inout mode: Termios):
     mode.control_characters[VTIME] = 0
 
 
-fn set_tty_to_raw(fd: Int, when: Int = TCSAFLUSH) raises -> Termios:
+fn set_tty_to_raw(file_descriptor: Int, when: Int = TCSAFLUSH) -> (Termios, Error):
     """Set terminal to raw mode.
 
     Args:
-        fd: File descriptor of the terminal.
+        file_descriptor: File descriptor of the terminal.
         when: When to apply the changes. Default is TCSAFLUSH.
 
     Returns:
-        The original terminal attributes.
+        The original terminal attributes, and an error if any.
     """
-    var mode = get_tty_attributes(fd)
-    var new = Termios(mode)
+    var mode: Termios
+    var err: Error
+    mode, err = get_tty_attributes(file_descriptor)
+    if err:
+        return mode, err
+
+    var new = mode
     set_control_flags_to_raw_mode(new)
-    var status = set_tty_attributes(fd, when, Pointer.address_of(new))
+
+    var status: Int32
+    status, err = set_tty_attributes(file_descriptor, when, UnsafePointer(new))
     if status != 0:
-        raise Error("setraw failed at set_tty_attributes")
-    return mode
+        return mode, Error("set_tty_to_raw: failed at set_tty_attributes")
+
+    return mode, Error()
 
 
-fn set_tty_to_cbreak(fd: Int, when: Int = TCSAFLUSH) raises -> Termios:
+fn set_tty_to_cbreak(file_descriptor: Int, when: Int = TCSAFLUSH) -> (Termios, Error):
     """Set terminal to cbreak mode.
 
     Args:
-        fd: File descriptor of the terminal.
+        file_descriptor: File descriptor of the terminal.
         when: When to apply the changes. Default is TCSAFLUSH.
 
     Returns:
-        The original terminal attributes.
+        The original terminal attributes, and an error if any.
     """
-    var mode = get_tty_attributes(fd)
-    var new = Termios(mode)
+    var mode: Termios
+    var err: Error
+    mode, err = get_tty_attributes(file_descriptor)
+    if err:
+        return mode, err
+
+    var new = mode
     set_control_flags_to_cbreak(new)
-    var ptr = Pointer.address_of(new)
-    var status = set_tty_attributes(fd, when, ptr)
+
+    var status: Int32
+    status, err = set_tty_attributes(file_descriptor, when, UnsafePointer(new))
     if status != 0:
-        raise Error("setcbreak failed at set_tty_attributes")
-    return mode
+        return mode, Error("set_tty_to_raw: failed at set_tty_attributes")
+
+    return mode, Error()

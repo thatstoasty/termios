@@ -141,38 +141,26 @@ alias TCIOFLUSH = 3
 
 # define NCCS 12
 @value
-@register_passable("trivial")
-struct Termios:
+struct Termios(CollectionElement):
     var input_flags: tcflag_t  # input modes, c_iflag
     var output_flags: tcflag_t  # output modes, c_oflag
     var control_flags: tcflag_t  # control modes, control_flags
     var local_flags: tcflag_t  # local modes, c_lflag
-    var control_characters: StaticTuple[cc_t, 20]  # control characters, c_cc
+    var control_characters: InlineArray[cc_t, 20]  # control characters, c_cc
     var input_speed: speed_t  # input baudrate, c_ispeed
     var output_speed: speed_t  # output baudrate, c_ospeed
 
     fn __init__(inout self):
-        self.control_characters = StaticTuple[cc_t, 20]()
-        for i in range(len(self.control_characters)):
-            self.control_characters[i] = 0
+        self.control_characters = InlineArray[cc_t, 20](0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         self.control_flags = 0
         self.local_flags = 0
         self.input_flags = 0
         self.output_flags = 0
         self.input_speed = 0
         self.output_speed = 0
-    
-    fn __init__(inout self, other: Self):
-        self.control_characters = other.control_characters
-        self.control_flags = other.control_flags
-        self.local_flags = other.local_flags
-        self.input_flags = other.input_flags
-        self.output_flags = other.output_flags
-        self.input_speed = other.input_speed
-        self.output_speed = other.output_speed
 
 
-fn tcgetattr(fd: c_int, termios_p: Pointer[Termios]) -> c_int:
+fn tcgetattr(fd: c_int, termios_p: UnsafePointer[Termios]) -> c_int:
     """Libc POSIX `tcgetattr` function
     Reference: https://man7.org/linux/man-pages/man3/tcgetattr.3.html
     Fn signature: int tcgetattr(int fd, struct Termios *termios_p).
@@ -181,10 +169,10 @@ fn tcgetattr(fd: c_int, termios_p: Pointer[Termios]) -> c_int:
         fd: File descriptor.
         termios_p: Pointer to a Termios struct.
     """
-    return external_call["tcgetattr", c_int, c_int, Pointer[Termios]](fd, termios_p)
+    return external_call["tcgetattr", c_int, c_int, UnsafePointer[Termios]](fd, termios_p)
 
 
-fn tcsetattr(fd: c_int, optional_actions: c_int, termios_p: Pointer[Termios]) -> c_int:
+fn tcsetattr(fd: c_int, optional_actions: c_int, termios_p: UnsafePointer[Termios]) -> c_int:
     """Libc POSIX `tcsetattr` function
     Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
     Fn signature: int tcsetattr(int fd, int optional_actions, const struct Termios *termios_p).
@@ -194,7 +182,7 @@ fn tcsetattr(fd: c_int, optional_actions: c_int, termios_p: Pointer[Termios]) ->
         optional_actions: Optional actions.
         termios_p: Pointer to a Termios struct.
     """
-    return external_call["tcsetattr", c_int, c_int, c_int, Pointer[Termios]](
+    return external_call["tcsetattr", c_int, c_int, c_int, UnsafePointer[Termios]](
         fd, optional_actions, termios_p
     )
 
@@ -246,7 +234,7 @@ fn tcflow(fd: c_int, action: c_int) -> c_int:
     return external_call["tcflow", c_int, c_int](fd, action)
 
 
-fn cfmakeraw(termios_p: Pointer[Termios]) -> c_void:
+fn cfmakeraw(termios_p: UnsafePointer[Termios]) -> c_void:
     """Libc POSIX `cfmakeraw` function
     Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
     Fn signature: void cfmakeraw(struct Termios *termios_p).
@@ -254,7 +242,7 @@ fn cfmakeraw(termios_p: Pointer[Termios]) -> c_void:
     Args:
         termios_p: Pointer to a Termios struct.
     """
-    return external_call["cfmakeraw", c_void, Pointer[Termios]](termios_p)
+    return external_call["cfmakeraw", c_void, UnsafePointer[Termios]](termios_p)
 
 
 # @value
@@ -272,7 +260,7 @@ fn cfmakeraw(termios_p: Pointer[Termios]) -> c_void:
 #         self.ws_ypixel = 0
 
 
-# fn tcgetwinsize(fd: c_int, winsize_p: Pointer[winsize]) -> c_int:
+# fn tcgetwinsize(fd: c_int, winsize_p: UnsafePointer[winsize]) -> c_int:
 #     """Libc POSIX `tcgetwinsize` function
 #     Reference: https://man.netbsd.org/tcgetwinsize.3
 #     Fn signature: int tcgetwinsize(int fd, struct winsize *gws).
@@ -281,10 +269,10 @@ fn cfmakeraw(termios_p: Pointer[Termios]) -> c_void:
 #         fd: File descriptor.
 #         winsize_p: Pointer to a winsize struct.
 #     """
-#     return external_call["tcgetwinsize", c_int, c_int, Pointer[winsize]](fd, winsize_p)
+#     return external_call["tcgetwinsize", c_int, c_int, UnsafePointer[winsize]](fd, winsize_p)
 
 
-# fn tcsetwinsize(fd: c_int, winsize_p: Pointer[winsize]) -> c_int:
+# fn tcsetwinsize(fd: c_int, winsize_p: UnsafePointer[winsize]) -> c_int:
 #     """Libc POSIX `tcgetwinsize` function
 #     Reference: https://man.netbsd.org/tcsetwinsize.3
 #     Fn signature: int tcsetwinsize(int fd, const struct winsize *sws).
@@ -293,4 +281,4 @@ fn cfmakeraw(termios_p: Pointer[Termios]) -> c_void:
 #         fd: File descriptor.
 #         winsize_p: Pointer to a winsize struct.
 #     """
-#     return external_call["tcsetwinsize", c_int, c_int, Pointer[winsize]](fd, winsize_p)
+#     return external_call["tcsetwinsize", c_int, c_int, UnsafePointer[winsize]](fd, winsize_p)

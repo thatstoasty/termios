@@ -5,8 +5,16 @@ from termios.tty import set_control_flags_to_raw_mode, set_tty_to_raw, set_tty_t
 
 
 fn get_key_unix() raises -> String:
-    var old_settings = get_tty_attributes(FD_STDIN)
-    var status = set_tty_to_raw(int(FD_STDIN))
+    var old_settings: Termios
+    var err: Error
+    old_settings, err = get_tty_attributes(FD_STDIN)
+    if err:
+        raise err
+
+    var throwaway: Termios
+    throwaway, err = set_tty_to_raw(int(FD_STDIN))
+    if err:
+        raise err
 
     var key: String = ""
     with open("/dev/stdin", "r") as stdin:
@@ -14,8 +22,8 @@ fn get_key_unix() raises -> String:
         key = chr(int(bytes[0]))
 
     # restore terminal settings
-    var ptr = Pointer.address_of(old_settings)
-    var setattr_result = set_tty_attributes(FD_STDIN, TCSADRAIN, ptr)
+    var status: Int32
+    status, err = set_tty_attributes(FD_STDIN, TCSADRAIN, UnsafePointer(old_settings))
     return key
 
 
