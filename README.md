@@ -1,18 +1,25 @@
 # Termios
-Mojo Termios via libc. This is only tested on Mac and will most likely have issues with the `Termios` struct on linux. Update the `Termios` struct as needed if running on Linux. You would most likely need to change the order of the fields in the struct.
+Mojo Termios via `libc`. This is only tested on Mac and will most likely have issues with the `Termios` struct on linux. Update the `Termios` struct as needed if running on Linux. You would most likely need to change the order of the fields in the struct.
 
 Will add more later. Here's a basic example from the examples directory.
 
 ```mojo
-from termios.c.terminal import tcgetattr, tcsetattr, tcdrain, FD_STDIN, cc_t, Termios, IGNBRK, OPOST, CREAD, ECHO, TCSADRAIN, TCSANOW
-from termios.c.syscalls import read_string_from_fd, read_bytes_from_fd, read_from_stdin
+from termios.c import FD_STDIN, TCSADRAIN, Termios
 from termios.terminal import get_tty_attributes, set_tty_attributes
 from termios.tty import set_control_flags_to_raw_mode, set_tty_to_raw, set_tty_to_cbreak
 
 
 fn get_key_unix() raises -> String:
-    var old_settings = get_tty_attributes(FD_STDIN)
-    var status = set_tty_to_raw(int(FD_STDIN))
+    var old_settings: Termios
+    var err: Error
+    old_settings, err = get_tty_attributes(FD_STDIN)
+    if err:
+        raise err
+
+    var throwaway: Termios
+    throwaway, err = set_tty_to_raw(FD_STDIN)
+    if err:
+        raise err
 
     var key: String = ""
     with open("/dev/stdin", "r") as stdin:
@@ -20,8 +27,8 @@ fn get_key_unix() raises -> String:
         key = chr(int(bytes[0]))
 
     # restore terminal settings
-    var ptr = Pointer.address_of(old_settings)
-    var setattr_result = set_tty_attributes(FD_STDIN, TCSADRAIN, ptr)
+    var status: Int32
+    status, err = set_tty_attributes(FD_STDIN, TCSADRAIN, UnsafePointer(old_settings))
     return key
 
 

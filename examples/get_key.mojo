@@ -1,5 +1,4 @@
-from termios.c.terminal import tcgetattr, tcsetattr, tcdrain, FD_STDIN, cc_t, Termios, IGNBRK, OPOST, CREAD, ECHO, TCSADRAIN, TCSANOW
-from termios.c.syscalls import read_string_from_fd, read_bytes_from_fd, read_from_stdin
+from termios.c import FD_STDIN, TCSADRAIN, Termios
 from termios.terminal import get_tty_attributes, set_tty_attributes
 from termios.tty import set_control_flags_to_raw_mode, set_tty_to_raw, set_tty_to_cbreak
 
@@ -12,7 +11,7 @@ fn get_key_unix() raises -> String:
         raise err
 
     var throwaway: Termios
-    throwaway, err = set_tty_to_raw(int(FD_STDIN))
+    throwaway, err = set_tty_to_raw(FD_STDIN)
     if err:
         raise err
 

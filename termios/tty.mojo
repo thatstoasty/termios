@@ -1,4 +1,4 @@
-from .c.terminal import (
+from .c import (
     Termios,
     ECHO,
     ICANON,
@@ -30,7 +30,6 @@ from .c.terminal import (
     TOSTOP,
 )
 from .terminal import get_tty_attributes, set_tty_attributes
-from time import now
 
 # Indices for Termios list.
 alias IFLAG = 0
@@ -114,7 +113,7 @@ fn set_control_flags_to_cbreak(inout mode: Termios):
     mode.control_characters[VTIME] = 0
 
 
-fn set_tty_to_raw(file_descriptor: Int, when: Int = TCSAFLUSH) -> (Termios, Error):
+fn set_tty_to_raw(file_descriptor: Int32, when: Int = TCSAFLUSH) -> (Termios, Error):
     """Set terminal to raw mode.
 
     Args:
@@ -141,7 +140,7 @@ fn set_tty_to_raw(file_descriptor: Int, when: Int = TCSAFLUSH) -> (Termios, Erro
     return mode, Error()
 
 
-fn set_tty_to_cbreak(file_descriptor: Int, when: Int = TCSAFLUSH) -> (Termios, Error):
+fn set_tty_to_cbreak(file_descriptor: Int32, when: Int = TCSAFLUSH) -> (Termios, Error):
     """Set terminal to cbreak mode.
 
     Args:
