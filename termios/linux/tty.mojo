@@ -1,33 +1,14 @@
 from .c import (
     Termios,
-    ECHO,
-    ICANON,
-    VMIN,
-    VTIME,
-    TCSAFLUSH,
-    IGNBRK,
-    BRKINT,
-    IGNPAR,
-    PARMRK,
-    INPCK,
-    ISTRIP,
-    INLCR,
-    IGNCR,
-    ICRNL,
-    IXON,
-    IXANY,
-    IXOFF,
-    OPOST,
-    PARENB,
-    CSIZE,
+    CType,
+    ControlMode,
+    LocalMode,
+    InputMode,
+    OutputMode,
+    ControlCharacter,
+    TTYWhen,
+    TTYFlow,
     CS8,
-    ECHOE,
-    ECHOK,
-    ECHONL,
-    IEXTEN,
-    ISIG,
-    NOFLSH,
-    TOSTOP,
 )
 from .terminal import get_tty_attributes, set_tty_attributes
 
@@ -56,39 +37,39 @@ fn set_control_flags_to_raw_mode(inout mode: Termios):
     # See chapter 11 "General Terminal Interface"
     # of POSIX.1-2017 Base Definitions.
     mode.input_flags &= ~(
-        IGNBRK
-        | BRKINT
-        | IGNPAR
-        | PARMRK
-        | INPCK
-        | ISTRIP
-        | INLCR
-        | IGNCR
-        | ICRNL
-        | IXON
-        | IXANY
-        | IXOFF
+        InputMode.IGNBRK
+        | InputMode.BRKINT
+        | InputMode.IGNPAR
+        | InputMode.PARMRK
+        | InputMode.INPCK
+        | InputMode.ISTRIP
+        | InputMode.INLCR
+        | InputMode.IGNCR
+        | InputMode.ICRNL
+        | InputMode.IXON
+        | InputMode.IXANY
+        | InputMode.IXOFF
     )
 
     # Do not post-process output.
-    mode.output_flags &= ~OPOST
+    mode.output_flags &= ~OutputMode.OPOST
 
     # Disable parity generation and detection; clear character size mask;
     # let character size be 8 bits.
-    mode.control_flags &= ~(PARENB | CSIZE)
+    mode.control_flags &= ~(ControlMode.PARENB | ControlMode.CSIZE)
     mode.control_flags |= CS8
 
     # Clear all POSIX.1-2017 local mode flags.
     mode.local_flags &= ~(
-        ECHO | ECHOE | ECHOK | ECHONL | ICANON | IEXTEN | ISIG | NOFLSH | TOSTOP
+        LocalMode.ECHO | LocalMode.ECHOE | LocalMode.ECHOK | LocalMode.ECHONL | LocalMode.ICANON | LocalMode.IEXTEN | LocalMode.ISIG | LocalMode.NOFLSH | LocalMode.TOSTOP
     )
 
     # POSIX.1-2017, 11.1.7 Non-Canonical Mode Input Processing,
     # Case B: MIN>0, TIME=0
     # A pending read shall block until MIN (here 1) bytes are received,
     # or a signal is received.
-    mode.control_characters[VMIN] = 1
-    mode.control_characters[VTIME] = 0
+    mode.control_characters[ControlCharacter.VMIN] = 1
+    mode.control_characters[ControlCharacter.VTIME] = 0
 
 
 fn set_control_flags_to_cbreak(inout mode: Termios):
@@ -103,17 +84,17 @@ fn set_control_flags_to_cbreak(inout mode: Termios):
         mode: Termios instance to modify in place.
     """
     # Do not echo characters; disable canonical input.
-    mode.local_flags &= ~(ECHO | ICANON)
+    mode.local_flags &= ~(LocalMode.ECHO | LocalMode.ICANON)
 
     # POSIX.1-2017, 11.1.7 Non-Canonical Mode Input Processing,
     # Case B: MIN>0, TIME=0
     # A pending read shall block until MIN (here 1) bytes are received,
     # or a signal is received.
-    mode.control_characters[VMIN] = 1
-    mode.control_characters[VTIME] = 0
+    mode.control_characters[ControlCharacter.VMIN] = 1
+    mode.control_characters[ControlCharacter.VTIME] = 0
 
 
-fn set_tty_to_raw(file_descriptor: Int32, when: Int = TCSAFLUSH) -> (Termios, Error):
+fn set_tty_to_raw(file_descriptor: Int32, when: Int = TTYWhen.TCSAFLUSH) -> (Termios, Error):
     """Set terminal to raw mode.
 
     Args:
@@ -140,7 +121,7 @@ fn set_tty_to_raw(file_descriptor: Int32, when: Int = TCSAFLUSH) -> (Termios, Er
     return mode, Error()
 
 
-fn set_tty_to_cbreak(file_descriptor: Int32, when: Int = TCSAFLUSH) -> (Termios, Error):
+fn set_tty_to_cbreak(file_descriptor: Int32, when: Int = TTYWhen.TCSAFLUSH) -> (Termios, Error):
     """Set terminal to cbreak mode.
 
     Args:

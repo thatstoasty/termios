@@ -6,9 +6,6 @@ from .c import (
     tcdrain,
     tcflush,
     tcflow,
-    TCSADRAIN,
-    TCSAFLUSH,
-    TCSANOW,
 )
 
 
