@@ -114,7 +114,7 @@ fn set_tty_to_raw(file_descriptor: Int32, when: Int = TTYWhen.TCSAFLUSH) -> (Ter
     set_control_flags_to_raw_mode(new)
 
     var status: Int32
-    status, err = set_tty_attributes(file_descriptor, when, UnsafePointer(new))
+    status, err = set_tty_attributes(file_descriptor, when, UnsafePointer.address_of(new))
     if status != 0:
         return mode, Error("set_tty_to_raw: failed at set_tty_attributes")
 
@@ -141,7 +141,7 @@ fn set_tty_to_cbreak(file_descriptor: Int32, when: Int = TTYWhen.TCSAFLUSH) -> (
     set_control_flags_to_cbreak(new)
 
     var status: Int32
-    status, err = set_tty_attributes(file_descriptor, when, UnsafePointer(new))
+    status, err = set_tty_attributes(file_descriptor, when, UnsafePointer.address_of(new))
     if status != 0:
         return mode, Error("set_tty_to_raw: failed at set_tty_attributes")
 

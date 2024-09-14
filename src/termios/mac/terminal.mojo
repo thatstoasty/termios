@@ -20,15 +20,15 @@ fn get_tty_attributes(file_descriptor: Int32) -> (Termios, Error):
         Termios: Termios struct.
     """
     var termios_p = Termios()
-    var status = tcgetattr(file_descriptor, UnsafePointer(termios_p))
+    var status = tcgetattr(file_descriptor, Reference(termios_p))
     if status != 0:
-        return termios_p ^, Error("Failed tcgetattr." + str(status))
+        return termios_p^, Error("Failed tcgetattr." + str(status))
 
-    return termios_p ^, Error()
+    return termios_p^, Error()
 
 
 fn set_tty_attributes(
-    file_descriptor: Int32, optional_actions: Int32, termios_p: UnsafePointer[Termios]
+    file_descriptor: Int32, optional_actions: Int32, inout termios_p: Termios
 ) -> (Int32, Error):
     """Set the tty attributes for file descriptor file_descriptor from the attributes, which is a list like the one returned by tcgetattr(). The when argument determines when the attributes are changed:
     This is a wrapper around tcsetattr().
@@ -50,7 +50,7 @@ fn set_tty_attributes(
     Returns:
         Int32: status.
     """
-    var status = tcsetattr(file_descriptor, optional_actions, termios_p)
+    var status = tcsetattr(file_descriptor, optional_actions, Reference(termios_p))
     if status != 0:
         return status, Error("Failed tcsetattr." + str(status))
 

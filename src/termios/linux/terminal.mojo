@@ -20,7 +20,7 @@ fn get_tty_attributes(file_descriptor: Int32) -> (Termios, Error):
         Termios: Termios struct.
     """
     var termios_p = Termios()
-    var status = tcgetattr(file_descriptor, UnsafePointer(termios_p))
+    var status = tcgetattr(file_descriptor, UnsafePointer.address_of(termios_p))
     if status != 0:
         return termios_p ^, Error("Failed tcgetattr." + str(status))
 

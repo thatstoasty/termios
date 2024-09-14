@@ -1,0 +1,17 @@
+[project]
+authors = ["Mikhail Tavarez <miktavarez@gmail.com>"]
+channels = ["conda-forge", "https://conda.modular.com/max"]
+description = "Mojo Termios via libc bindings."
+name = "termios"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+tests = "bash scripts/tests.sh"
+examples = "bash scripts/examples.sh"
+build = "rattler-build build -r src -c https://conda.modular.com/max -c conda-forge --skip-existing=all"
+publish = { cmd = "bash scripts/publish.sh", env = { PREFIX_API_KEY = "$PREFIX_API_KEY" } }
+
+
+[dependencies]
+max = ">=24.5.0,<25"

@@ -1,4 +1,5 @@
 from termios import *
+from socket import SO_RCVTIMEO
 import sys
 
 # control_flags values
@@ -68,3 +69,5 @@ print("    alias TCOOFF =", TCOOFF)
 print("    alias TCOON =", TCOON)
 print("    alias TCOFLUSH =", TCOFLUSH)
 print("    alias TCIOFLUSH =", TCIOFLUSH)
+
+print(SO_RCVTIMEO)

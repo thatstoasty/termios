@@ -163,7 +163,7 @@ fn tcsendbreak(fd: CType.int, duration: CType.int) -> CType.int:
 
 fn tcdrain(fd: CType.int) -> CType.int:
     """Libc POSIX `tcdrain` function
-    Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
+    Reference: https://man7.org/linux/man-pages/man3/tcdrain.3.html
     Fn signature: int tcdrain(int fd).
 
     Args:
@@ -174,26 +174,26 @@ fn tcdrain(fd: CType.int) -> CType.int:
 
 fn tcflush(fd: CType.int, queue_selector: CType.int) -> CType.int:
     """Libc POSIX `tcflush` function
-    Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
-    Fn signature: int tcflush(int fd).
+    Reference: https://man7.org/linux/man-pages/man3/tcflush.3.html
+    Fn signature: int tcflush(int fd, int queue_selector);.
 
     Args:
         fd: File descriptor.
         queue_selector: Queue selector.
     """
-    return external_call["tcflush", CType.int, CType.int](fd, queue_selector)
+    return external_call["tcflush", CType.int, CType.int, CType.int](fd, queue_selector)
 
 
 fn tcflow(fd: CType.int, action: CType.int) -> CType.int:
     """Libc POSIX `tcflow` function
-    Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
-    Fn signature: int tcflow(int fd).
+    Reference: https://man7.org/linux/man-pages/man3/tcflow.3.html
+    Fn signature: int tcflow(int fd, int action).
 
     Args:
         fd: File descriptor.
         action: Action.
     """
-    return external_call["tcflow", CType.int, CType.int](fd, action)
+    return external_call["tcflow", CType.int, CType.int, CType.int](fd, action)
 
 
 fn cfmakeraw[T: Termios](termios_p: UnsafePointer[Termios]) -> CType.void:
