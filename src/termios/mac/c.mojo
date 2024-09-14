@@ -14,7 +14,7 @@ alias long = Int64
 alias ulong = UInt64
 alias float = Float32
 alias double = Float64
-alias size_t = Int
+alias size_t = UInt
 alias ssize_t = Int
 alias cc_t = UInt8
 alias speed_t = UInt64
@@ -195,7 +195,7 @@ fn tcsetattr(fd: c_int, optional_actions: c_int, termios_p: Reference[Termios]) 
 
 fn tcsendbreak(fd: c_int, duration: c_int) -> c_int:
     """Libc POSIX `tcsendbreak` function
-    Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
+    Reference: https://man7.org/linux/man-pages/man3/tcsendbreak.3.html
     Fn signature: int tcsendbreak(int fd, int duration);.
 
     Args:
@@ -240,7 +240,7 @@ fn tcflow(fd: c_int, action: c_int) -> c_int:
     return external_call["tcflow", c_int, c_int, c_int](fd, action)
 
 
-fn cfmakeraw[T: Termios](termios_p: Reference[Termios]) -> void:
+fn cfmakeraw(termios_p: Reference[Termios]) -> void:
     """Libc POSIX `cfmakeraw` function
     Reference: https://man7.org/linux/man-pages/man3/tcsetattr.3.html
     Fn signature: void cfmakeraw(struct Termios *termios_p).

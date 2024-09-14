@@ -8,6 +8,7 @@ from .c import (
     TTYWhen,
     TTYFlow,
     CS8,
+    c_int
 )
 from .terminal import get_tty_attributes, set_tty_attributes
 
@@ -93,7 +94,7 @@ fn set_control_flags_to_cbreak(inout mode: Termios):
     mode.control_characters[ControlCharacter.VTIME] = 0
 
 
-fn set_tty_to_raw(file_descriptor: Int32, when: Int = TTYWhen.TCSAFLUSH) -> (Termios, Error):
+fn set_tty_to_raw(file_descriptor: c_int, when: Int = TTYWhen.TCSAFLUSH) raises -> Termios:
     """Set terminal to raw mode.
 
     Args:
@@ -103,24 +104,15 @@ fn set_tty_to_raw(file_descriptor: Int32, when: Int = TTYWhen.TCSAFLUSH) -> (Ter
     Returns:
         The original terminal attributes, and an error if any.
     """
-    var mode: Termios
-    var err: Error
-    mode, err = get_tty_attributes(file_descriptor)
-    if err:
-        return mode, err
-
+    var mode = get_tty_attributes(file_descriptor)
     var new = mode
     set_control_flags_to_raw_mode(new)
+    set_tty_attributes(file_descriptor, when, new)
 
-    var status: Int32
-    status, err = set_tty_attributes(file_descriptor, when, new)
-    if status != 0:
-        return mode, Error("set_tty_to_raw: failed at set_tty_attributes")
-
-    return mode, Error()
+    return mode
 
 
-fn set_tty_to_cbreak(file_descriptor: Int32, when: Int = TTYWhen.TCSAFLUSH) -> (Termios, Error):
+fn set_tty_to_cbreak(file_descriptor: c_int, when: Int = TTYWhen.TCSAFLUSH) raises -> Termios:
     """Set terminal to cbreak mode.
 
     Args:
@@ -130,18 +122,9 @@ fn set_tty_to_cbreak(file_descriptor: Int32, when: Int = TTYWhen.TCSAFLUSH) -> (
     Returns:
         The original terminal attributes, and an error if any.
     """
-    var mode: Termios
-    var err: Error
-    mode, err = get_tty_attributes(file_descriptor)
-    if err:
-        return mode, err
-
+    var mode = get_tty_attributes(file_descriptor)
     var new = mode
     set_control_flags_to_cbreak(new)
+    set_tty_attributes(file_descriptor, when, new)
 
-    var status: Int32
-    status, err = set_tty_attributes(file_descriptor, when, new)
-    if status != 0:
-        return mode, Error("set_tty_to_raw: failed at set_tty_attributes")
-
-    return mode, Error()
+    return mode

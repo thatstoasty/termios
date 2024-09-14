@@ -18,15 +18,8 @@ fn get_key_unix() raises -> String:
 fn get_key() raises -> String:
     print("Press c to exit.")
     var k: String = ""
-    var old_settings: Termios
-    var err: Error
-    old_settings, err = get_tty_attributes(FD.FD_STDIN)
-    if err:
-        raise err
-
-    _, err = set_tty_to_raw(FD.FD_STDIN)
-    if err:
-        raise err
+    var old_settings = get_tty_attributes(FD.FD_STDIN)
+    _ = set_tty_to_raw(FD.FD_STDIN)
 
     while True:
         k = get_key_unix()
@@ -34,8 +27,7 @@ fn get_key() raises -> String:
             break
 
     # restore terminal settings
-    var status: Int32
-    status, err = set_tty_attributes(FD.FD_STDIN, TTYWhen.TCSADRAIN, old_settings)  
+    set_tty_attributes(FD.FD_STDIN, TTYWhen.TCSADRAIN, old_settings)  
     print(k)
 
     return k
