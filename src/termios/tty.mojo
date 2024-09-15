@@ -24,7 +24,7 @@ alias CC = 6
 
 fn cfmakeraw(inout mode: Termios):
     """Make Termios mode raw.
-    This is roughly equivalent to CPython's cfmakeraw().
+    This is roughly equivalent to CPython's `cfmakeraw()`.
 
     - Turns off post-processing of output.
     - Disables parity generation and detection.
@@ -74,7 +74,7 @@ fn cfmakeraw(inout mode: Termios):
 
 fn cfmakecbreak(inout mode: Termios):
     """Make Termios mode cbreak.
-    This is roughly equivalent to CPython's cfmakecbreak().
+    This is roughly equivalent to CPython's `cfmakecbreak()`.
 
     - Turns off character echoing.
     - Disables canonical input.

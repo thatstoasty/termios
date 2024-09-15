@@ -13,7 +13,7 @@ import .c
 
 fn get_tty_attributes(file_descriptor: c_int) raises -> Termios:
     """Return the tty attributes for file descriptor.
-    This is a wrapper around tcgetattr().
+    This is a wrapper around `tcgetattr()`.
 
     Args:
         file_descriptor: File descriptor.
@@ -33,15 +33,15 @@ fn set_tty_attributes(
     file_descriptor: c_int, optional_actions: c_int, inout termios_p: Termios
 ) raises -> None:
     """Set the tty attributes for file descriptor file_descriptor from the attributes, which is a list like the one returned by tcgetattr(). The when argument determines when the attributes are changed:
-    This is a wrapper around tcsetattr().
+    This is a wrapper around `tcsetattr()`.
 
-    termios.TCSANOW
+    `termios.TCSANOW`
         Change attributes immediately.
 
-    termios.TCSADRAIN
+    `termios.TCSADRAIN`
         Change attributes after transmitting all queued output.
 
-    termios.TCSAFLUSH
+    `termios.TCSAFLUSH`
         Change attributes after transmitting all queued output and discarding all queued input.
 
     Args:
@@ -55,7 +55,7 @@ fn set_tty_attributes(
 
 
 fn send_break(file_descriptor: c_int, duration: c_int) raises -> None:
-    """Send a break on file descriptor file_descriptor. A zero duration sends a break for 0.25 - 0.5 seconds; a nonzero duration has a system dependent meaning.
+    """Send a break on file descriptor `file_descriptor`. A zero duration sends a break for 0.25 - 0.5 seconds; a nonzero duration has a system dependent meaning.
 
     Args:
         file_descriptor: File descriptor.
@@ -67,7 +67,7 @@ fn send_break(file_descriptor: c_int, duration: c_int) raises -> None:
 
 
 fn drain(file_descriptor: c_int) raises -> None:
-    """Wait until all output written to the object referred to by file_descriptor has been transmitted.
+    """Wait until all output written to the object referred to by `file_descriptor` has been transmitted.
 
     Args:
         file_descriptor: File descriptor.
@@ -78,11 +78,11 @@ fn drain(file_descriptor: c_int) raises -> None:
 
 
 fn flush(file_descriptor: c_int, queue_selector: c_int) raises -> None:
-    """Discard queued data on file descriptor file_descriptor. 
+    """Discard queued data on file descriptor `file_descriptor`. 
     The queue selector specifies which queue: 
-    - TCIFLUSH for the input queue
-    - TCOFLUSH for the output queue
-    - TCIOFLUSH for both queues.
+    - `TCIFLUSH` for the input queue
+    - `TCOFLUSH` for the output queue
+    - `TCIOFLUSH` for both queues.
 
     Args:
         file_descriptor: File descriptor.
@@ -96,10 +96,10 @@ fn flush(file_descriptor: c_int, queue_selector: c_int) raises -> None:
 fn flow(file_descriptor: c_int, action: c_int) raises -> None:
     """Suspend or resume input or output on file descriptor `file_descriptor`.
     The action argument can be:
-    - TCOOFF to suspend output
-    - TCOON to restart output
-    - TCIOFF to suspend input
-    - TCION to restart input.
+    - `TCOOFF` to suspend output
+    - `TCOON` to restart output
+    - `TCIOFF` to suspend input
+    - `TCION` to restart input.
 
     Args:
         file_descriptor: File descriptor.
