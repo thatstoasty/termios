@@ -1,6 +1,6 @@
-from termios.mac.c import FD, TTYWhen, Termios
-from termios.mac.terminal import get_tty_attributes, set_tty_attributes
-from termios.mac.tty import set_control_flags_to_raw_mode, set_tty_to_raw, set_tty_to_cbreak
+from termios.c import FD, TTYWhen, Termios
+from termios.terminal import get_tty_attributes, set_tty_attributes
+from termios.tty import set_tty_to_raw, set_tty_to_cbreak
 # from termios.linux.c import FD, TTYWhen, Termios
 # from termios.linux.terminal import get_tty_attributes, set_tty_attributes
 # from termios.linux.tty import set_control_flags_to_raw_mode, set_tty_to_raw, set_tty_to_cbreak

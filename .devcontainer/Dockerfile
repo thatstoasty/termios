@@ -61,14 +61,15 @@ RUN pip install \
 # 	matplotlib \
 # 	ipywidgets
 
-RUN curl https://get.modular.com | sh -
-# RUN modular auth examples && modular install nightly/mojo
-RUN modular auth examples && modular install mojo
+RUN curl -ssL https://magic.modular.com | bash
+# RUN curl https://get.modular.com | sh -
+# # RUN modular auth examples && modular install nightly/mojo
+# RUN modular auth examples && modular install mojo
 
-ARG MODULAR_HOME="/root/.modular"
-ENV MODULAR_HOME=$MODULAR_HOME
-# ENV PATH="$PATH:$MODULAR_HOME/pkg/packages.modular.com_nightly_mojo/bin"
-ENV PATH="$PATH:$MODULAR_HOME/pkg/packages.modular.com_mojo/bin"
+# ARG MODULAR_HOME="/root/.modular"
+# ENV MODULAR_HOME=$MODULAR_HOME
+# # ENV PATH="$PATH:$MODULAR_HOME/pkg/packages.modular.com_nightly_mojo/bin"
+# ENV PATH="$PATH:$MODULAR_HOME/pkg/packages.modular.com_mojo/bin"
 
 # Change permissions to allow for Apptainer/Singularity containers
 RUN chmod -R a+rwX /root
