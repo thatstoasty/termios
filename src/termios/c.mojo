@@ -27,21 +27,22 @@ alias tcflag_t = UInt64
 # 64bit system
 
 
-struct FD():
+struct FD:
     alias FD_STDIN = 0
     alias FD_STDOUT = 1
     alias FD_STDERR = 2
 
 
 # control_flags values
-struct ControlMode():
+struct ControlMode:
     alias CREAD = 2048 if os_is_macos() else 128
     alias CLOCAL = 32768 if os_is_macos() else 2048
     alias PARENB = 4096 if os_is_macos() else 256
     alias CSIZE = 768 if os_is_macos() else 48
 
+
 # local_flags values
-struct LocalMode():
+struct LocalMode:
     alias ICANON = 256 if os_is_macos() else 2
     alias ECHO = 8 if os_is_macos() else 1
     alias ECHOE = 2 if os_is_macos() else 16
@@ -54,11 +55,12 @@ struct LocalMode():
 
 
 # output_flags values
-struct OutputMode():
+struct OutputMode:
     alias OPOST = 1
 
+
 # input_flags values
-struct InputMode():
+struct InputMode:
     alias INLCR = 64
     alias IGNCR = 128
     alias ICRNL = 256
@@ -120,7 +122,8 @@ struct InputMode():
     #         (not in POSIX) Input is UTF8; this allows character-erase
     #         to be correctly performed in cooked mode.
 
-struct ControlCharacter():
+
+struct ControlCharacter:
     # Special Character indexes for control_characters
     alias VEOF = 0
     """Signal End-Of-Input `Ctrl-D`"""
@@ -145,18 +148,22 @@ struct ControlCharacter():
     alias VTIME = 17
     """TIME value `0`"""
 
+
 alias CS8 = 768
 
 
-struct TTYWhen():
+struct TTYWhen:
     """TTY when values."""
+
     alias TCSADRAIN = 1
     alias TCSAFLUSH = 2
     alias TCSANOW = 0
     alias TCSASOFT = 16
 
-struct TTYFlow():
+
+struct TTYFlow:
     """TTY flow actions."""
+
     alias TCOOFF = 1
     alias TCOON = 2
     alias TCOFLUSH = 2
@@ -165,7 +172,7 @@ struct TTYFlow():
 
 # define NCCS 12
 @value
-struct Termios():
+struct Termios(Stringable):
     var c_iflag: tcflag_t
     """Input mode flags."""
     var c_oflag: tcflag_t
@@ -189,6 +196,20 @@ struct Termios():
         self.c_oflag = 0
         self.c_ispeed = 0
         self.c_ospeed = 0
+
+    fn __str__(self) -> String:
+        var res = String("{\n")
+        res += "c_iflag: " + str(self.c_iflag) + ",\n"
+        res += "c_oflag: " + str(self.c_oflag) + ",\n"
+        res += "c_cflag: " + str(self.c_cflag) + ",\n"
+        res += "c_lflag: " + str(self.c_lflag) + ",\n"
+        res += "c_ispeed: " + str(self.c_ispeed) + ",\n"
+        res += "c_ospeed: " + str(self.c_ospeed) + ",\n"
+        res += "c_cc: ["
+        for i in range(20):
+            res += str(self.c_cc[i]) + ", "
+        res += "]\n"
+        return res
 
 
 fn tcgetattr(fd: c_int, inout termios_p: Termios) -> c_int:
