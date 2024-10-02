@@ -1,19 +1,9 @@
-from .c import (
-    Termios,
-    tcgetattr,
-    tcsetattr,
-    tcsendbreak,
-    tcdrain,
-    tcflush,
-    tcflow,
-    c_int
-)
 import .c
 
 
-fn get_tty_attributes(file_descriptor: c_int) raises -> Termios:
+fn tcgetattr(file_descriptor: c.c_int) raises -> c.Termios:
     """Return the tty attributes for file descriptor.
-    This is a wrapper around `tcgetattr()`.
+    This is a wrapper around `c.tcgetattr()`.
 
     Args:
         file_descriptor: File descriptor.
@@ -21,19 +11,17 @@ fn get_tty_attributes(file_descriptor: c_int) raises -> Termios:
     Returns:
         Termios struct.
     """
-    var termios_p = Termios()
-    var status = tcgetattr(file_descriptor, termios_p)
+    var termios_p = c.Termios()
+    var status = c.tcgetattr(file_descriptor, Reference(termios_p))
     if status != 0:
-        raise Error("Failed tcgetattr. Status: " + str(status))
+        raise Error("Failed c.tcgetattr. Status: " + str(status))
 
-    return termios_p^
+    return termios_p
 
 
-fn set_tty_attributes(
-    file_descriptor: c_int, optional_actions: c_int, inout termios_p: Termios
-) raises -> None:
-    """Set the tty attributes for file descriptor file_descriptor from the attributes, which is a list like the one returned by tcgetattr(). The when argument determines when the attributes are changed:
-    This is a wrapper around `tcsetattr()`.
+fn tcsetattr(file_descriptor: c.c_int, optional_actions: c.c_int, inout termios_p: c.Termios) raises -> None:
+    """Set the tty attributes for file descriptor file_descriptor from the attributes, which is a list like the one returned by c.tcgetattr(). The when argument determines when the attributes are changed:
+    This is a wrapper around `c.tcsetattr()`.
 
     `termios.TCSANOW`
         Change attributes immediately.
@@ -49,37 +37,37 @@ fn set_tty_attributes(
         optional_actions: When to change the attributes.
         termios_p: Pointer to Termios struct.
     """
-    var status = tcsetattr(file_descriptor, optional_actions, termios_p)
+    var status = c.tcsetattr(file_descriptor, optional_actions, Reference(termios_p))
     if status != 0:
-        raise Error("Failed tcsetattr. Status: " + str(status))
+        raise Error("Failed c.tcsetattr. Status: " + str(status))
 
 
-fn send_break(file_descriptor: c_int, duration: c_int) raises -> None:
+fn tcsendbreak(file_descriptor: c.c_int, duration: c.c_int) raises -> None:
     """Send a break on file descriptor `file_descriptor`. A zero duration sends a break for 0.25 - 0.5 seconds; a nonzero duration has a system dependent meaning.
 
     Args:
         file_descriptor: File descriptor.
         duration: Duration of break.
     """
-    var status = tcsendbreak(file_descriptor, duration)
+    var status = c.tcsendbreak(file_descriptor, duration)
     if status != 0:
-        raise Error("Failed tcsendbreak. Status: " + str(status))
+        raise Error("Failed c.tcsendbreak. Status: " + str(status))
 
 
-fn drain(file_descriptor: c_int) raises -> None:
+fn tcdrain(file_descriptor: c.c_int) raises -> None:
     """Wait until all output written to the object referred to by `file_descriptor` has been transmitted.
 
     Args:
         file_descriptor: File descriptor.
     """
-    var status = tcdrain(file_descriptor)
+    var status = c.tcdrain(file_descriptor)
     if status != 0:
-        raise Error("Failed tcdrain. Status: " + str(status))
+        raise Error("Failed c.tcdrain. Status: " + str(status))
 
 
-fn flush(file_descriptor: c_int, queue_selector: c_int) raises -> None:
-    """Discard queued data on file descriptor `file_descriptor`. 
-    The queue selector specifies which queue: 
+fn tcflush(file_descriptor: c.c_int, queue_selector: c.c_int) raises -> None:
+    """Discard queued data on file descriptor `file_descriptor`.
+    The queue selector specifies which queue:
     - `TCIFLUSH` for the input queue
     - `TCOFLUSH` for the output queue
     - `TCIOFLUSH` for both queues.
@@ -88,12 +76,12 @@ fn flush(file_descriptor: c_int, queue_selector: c_int) raises -> None:
         file_descriptor: File descriptor.
         queue_selector: Queue selector.
     """
-    var status = tcflush(file_descriptor, queue_selector)
+    var status = c.tcflush(file_descriptor, queue_selector)
     if status != 0:
-        raise Error("Failed tcflush. Status: " + str(status))
+        raise Error("Failed c.tcflush. Status: " + str(status))
 
 
-fn flow(file_descriptor: c_int, action: c_int) raises -> None:
+fn tcflow(file_descriptor: c.c_int, action: c.c_int) raises -> None:
     """Suspend or resume input or output on file descriptor `file_descriptor`.
     The action argument can be:
     - `TCOOFF` to suspend output
@@ -106,13 +94,13 @@ fn flow(file_descriptor: c_int, action: c_int) raises -> None:
         action: Action.
 
     """
-    var status = tcflow(file_descriptor, action)
+    var status = c.tcflow(file_descriptor, action)
     if status != 0:
-        raise Error("Failed tcflow, Status: " + str(status))
+        raise Error("Failed c.tcflow, Status: " + str(status))
 
 
 # Not available from libc
-# fn tc_getwinsize(file_descriptor: c_int) raises -> winsize:
+# fn tc_getwinsize(file_descriptor: c.c_int) raises -> winsize:
 #     """Return the window size of the terminal associated to file descriptor file_descriptor as a winsize object. The winsize object is a named tuple with four fields: ws_row, ws_col, ws_xpixel, and ws_ypixel.
 #     """
 #     var winsize_p = winsize()
@@ -123,7 +111,7 @@ fn flow(file_descriptor: c_int, action: c_int) raises -> None:
 #     return winsize_p
 
 
-# fn tc_setwinsize(file_descriptor: c_int, winsize: Int32) raises -> Int32:
+# fn tc_setwinsize(file_descriptor: c.c_int, winsize: Int32) raises -> Int32:
 #     var status = tcsetwinsize(file_descriptor, winsize)
 #     if status != 0:
 #         raise Error("Failed tcsetwinsize." + str(status))

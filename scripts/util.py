@@ -82,7 +82,7 @@ def publish_to_prefix(args: Any) -> None:
     for file in glob.glob(f'{conda_build_path}/**/*.conda'):
         try:
             subprocess.run(
-                ["rattler-build", "upload", "prefix", "-c", args.channel, file],
+                ["magic", "run", "rattler-build", "upload", "prefix", "-c", args.channel, file],
                 check=True,
             )
         except subprocess.CalledProcessError:
@@ -101,6 +101,7 @@ def prepare_temp_directory() -> None:
     """Creates the temporary directory used for building the package. Adds the compiled mojo package to the directory."""
     package = load_project_config()["project"]["name"]
     remove_temp_directory()
+    os.mkdir(TEMP_DIR)
     subprocess.run(
         ["mojo", "package", f"src/{package}", "-o", f"{TEMP_DIR}/{package}.mojopkg"],
         check=True,
@@ -113,7 +114,7 @@ def execute_package_tests(args: Any) -> None:
 
     print("Building package and copying tests.")
     prepare_temp_directory()
-    shutil.copytree(TEST_DIR, TEMP_DIR)
+    shutil.copytree(TEST_DIR, TEMP_DIR, dirs_exist_ok=True)
 
     print("Running tests...")
     subprocess.run(["mojo", "test", TEMP_DIR], check=True)
@@ -127,7 +128,7 @@ def execute_package_examples(args: Any) -> None:
 
     print("Building package and copying examples.")
     prepare_temp_directory()
-    shutil.copytree(EXAMPLE_DIR, TEMP_DIR)
+    shutil.copytree(EXAMPLE_DIR, TEMP_DIR, dirs_exist_ok=True)
 
     print("Running examples...")
     subprocess.run(["mojo", "test", TEMP_DIR], check=True)
@@ -140,7 +141,7 @@ def execute_package_benchmarks(args: Any) -> None:
 
     print("Building package and copying benchmarks.")
     prepare_temp_directory()
-    shutil.copytree(BENCHMARK_DIR, TEMP_DIR)
+    shutil.copytree(BENCHMARK_DIR, TEMP_DIR, dirs_exist_ok=True)
 
     print("Running benchmarks...")
     subprocess.run(["mojo", "test", TEMP_DIR], check=True)
@@ -165,7 +166,7 @@ def build_conda_package(args: Any) -> None:
 
     generate_recipe(args)
     subprocess.run(
-        ["rattler-build", "build", "-r", RECIPE_DIR, "--skip-existing=all", *options],
+        ["magic", "run", "rattler-build", "build", "-r", RECIPE_DIR, "--skip-existing=all", *options],
         check=True,
     )
     os.remove(f"{RECIPE_DIR}/recipe.yaml")

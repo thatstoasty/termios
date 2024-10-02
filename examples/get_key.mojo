@@ -1,9 +1,5 @@
-from termios.c import FD, TTYWhen, Termios
-from termios.terminal import get_tty_attributes, set_tty_attributes
-from termios.tty import set_tty_to_raw, set_tty_to_cbreak
-# from termios.linux.c import FD, TTYWhen, Termios
-# from termios.linux.terminal import get_tty_attributes, set_tty_attributes
-# from termios.linux.tty import set_control_flags_to_raw_mode, set_tty_to_raw, set_tty_to_cbreak
+import termios
+from termios import Termios, tcsetattr, tcgetattr, set_raw, STDIN
 
 
 fn get_key_unix() raises -> String:
@@ -18,16 +14,16 @@ fn get_key_unix() raises -> String:
 fn get_key() raises -> String:
     print("Press c to exit.")
     var k: String = ""
-    var old_settings = get_tty_attributes(FD.FD_STDIN)
-    _ = set_tty_to_raw(FD.FD_STDIN)
+    var old_settings = tcgetattr(STDIN)
+    _ = set_raw(STDIN)
 
     while True:
         k = get_key_unix()
-        if k == 'c':
+        if k == "c":
             break
 
     # restore terminal settings
-    set_tty_attributes(FD.FD_STDIN, TTYWhen.TCSADRAIN, old_settings)  
+    tcsetattr(STDIN, termios.TCSADRAIN, old_settings)
     print(k)
 
     return k
